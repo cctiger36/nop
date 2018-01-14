@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  nop:
+    build: .
+    ports:
+      - 8545:8545
+    volumes:
+      - .:/var/nop
+    command: ./entrypoint.sh
