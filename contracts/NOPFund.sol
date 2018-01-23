@@ -5,8 +5,6 @@ import "./math/SafeMath.sol";
 contract NOPFund {
   using SafeMath for uint256;
 
-  uint256 public totalWeiAmount;
-
   event Charge(address indexed charger, uint256 value);
 
   function () external payable {
@@ -14,8 +12,6 @@ contract NOPFund {
   }
 
   function charge() public payable {
-    uint256 weiAmount = msg.value;
-    totalWeiAmount = totalWeiAmount.add(weiAmount);
-    Charge(msg.sender, weiAmount);
+    Charge(msg.sender, msg.value);
   }
 }

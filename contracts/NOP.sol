@@ -25,6 +25,6 @@ contract NOP is CappedCrowdsale {
   function fundBalanceOf(address _owner) public view returns (uint256 balance) {
     uint256 tokenAmount = token.balanceOf(_owner);
     uint256 tokenTotalSupply = token.totalSupply();
-    return fund.totalWeiAmount().mul(tokenAmount).div(tokenTotalSupply);
+    return fund.balance.mul(tokenAmount).div(tokenTotalSupply);
   }
 }
