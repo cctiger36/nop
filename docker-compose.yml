@@ -8,3 +8,5 @@ services:
     volumes:
       - .:/var/nop
     command: ./entrypoint.sh
+    environment:
+      - MNEMONIC_KEY=${MNEMONIC_KEY}
