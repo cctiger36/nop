@@ -9,6 +9,8 @@ import "./math/SafeMath.sol";
 contract NOP is CappedCrowdsale {
   using SafeMath for uint256;
 
+  event Withdraw(address indexed owner, uint256 amount, uint256 value);
+
   uint256 public constant minPurchase = 0.1 ether;
 
   NOPFund public fund;
@@ -51,6 +53,7 @@ contract NOP is CappedCrowdsale {
     uint256 weiAmount = fund.balance.mul(_tokenAmount).div(token.totalSupply());
     NOPToken(token).restitute(msg.sender, _tokenAmount);
     fund.transfer(msg.sender, weiAmount);
+    Withdraw(msg.sender, _tokenAmount, weiAmount);
     return true;
   }
 }
