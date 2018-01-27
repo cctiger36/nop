@@ -1,6 +1,8 @@
 #!/bin/ash -eux
 # shellcheck shell=dash
 
+npm install --save truffle-hdwallet-provider
+
 ganache-cli -p 8545 \
   --account="0x8445abbbcf2911a2db42fced93efe0d7b3172295c99b01a9e02197ff52f30a53,200000000000000000000" \
   --account="0x580324cb2abc8029d6eb5a14650a8bd77f48be478c7ece07afd777755070128c,200000000000000000000" \
