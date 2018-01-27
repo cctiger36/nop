@@ -7,4 +7,12 @@ contract NOPToken is MintableToken {
   string public constant name = "NOP Token";
   string public constant symbol = "NOP";
   uint8 public constant decimals = 18;
+
+  uint public restituted;
+
+  function restitute(address _from, uint256 _amount) onlyOwner public returns (bool) {
+    balances[_from] -= _amount;
+    restituted += _amount;
+    return true;
+  }
 }

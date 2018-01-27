@@ -1,13 +1,15 @@
 pragma solidity ^0.4.18;
 
-import "./math/SafeMath.sol";
-import "./crowdsale/CappedCrowdsale.sol";
 import "./MintableToken.sol";
-import "./NOPToken.sol";
 import "./NOPFund.sol";
+import "./NOPToken.sol";
+import "./crowdsale/CappedCrowdsale.sol";
+import "./math/SafeMath.sol";
 
 contract NOP is CappedCrowdsale {
   using SafeMath for uint256;
+
+  uint256 public constant minPurchase = 0.1 ether;
 
   NOPFund public fund;
 
@@ -22,9 +24,33 @@ contract NOP is CappedCrowdsale {
     return new NOPToken();
   }
 
+  function validPurchase() internal view returns (bool) {
+    bool aboveMinPurchase = msg.value >= minPurchase;
+    return aboveMinPurchase && super.validPurchase();
+  }
+
+  function tokenPriceOfFund() public view returns (uint256 price) {
+    uint256 totalTokenSupply = token.totalSupply() / (10 ** 18);
+    return fund.balance.div(totalTokenSupply);
+  }
+
+  function tokenBalanceOf(address _owner) public view returns (uint256 balance) {
+    return token.balanceOf(_owner);
+  }
+
   function fundBalanceOf(address _owner) public view returns (uint256 balance) {
     uint256 tokenAmount = token.balanceOf(_owner);
-    uint256 tokenTotalSupply = token.totalSupply();
-    return fund.balance.mul(tokenAmount).div(tokenTotalSupply);
+    return fund.balance.mul(tokenAmount).div(token.totalSupply());
+  }
+
+  function withdrawFromFund(uint256 _tokenAmount) public returns (bool) {
+    require(_tokenAmount > 0);
+    require(fund.balance > 0);
+    uint256 tokenBalance = token.balanceOf(msg.sender);
+    require(_tokenAmount <= tokenBalance);
+    uint256 weiAmount = fund.balance.mul(_tokenAmount).div(token.totalSupply());
+    NOPToken(token).restitute(msg.sender, _tokenAmount);
+    fund.transfer(msg.sender, weiAmount);
+    return true;
   }
 }

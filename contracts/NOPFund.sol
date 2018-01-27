@@ -1,8 +1,9 @@
 pragma solidity ^0.4.18;
 
+import "./Ownable.sol";
 import "./math/SafeMath.sol";
 
-contract NOPFund {
+contract NOPFund is Ownable {
   using SafeMath for uint256;
 
   event Charge(address indexed charger, uint256 value);
@@ -13,5 +14,10 @@ contract NOPFund {
 
   function charge() public payable {
     Charge(msg.sender, msg.value);
+  }
+
+  function transfer(address _to, uint256 _value) onlyOwner public returns (bool) {
+    _to.transfer(_value);
+    return true;
   }
 }
