@@ -12,7 +12,8 @@ module.exports = {
     rinkeby: {
       provider: rinkeby,
       network_id: 4,
-      from: "0x1B2c51401a72d9dfA80dd735D668F47b7bEd15e7"
+      gas: 6700000,
+      gasPrice: 20000000000
     }
   }
 };
