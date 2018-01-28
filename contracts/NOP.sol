@@ -32,8 +32,8 @@ contract NOP is CappedCrowdsale {
   }
 
   function tokenPriceOfFund() public view returns (uint256 price) {
-    uint256 totalTokenSupply = token.totalSupply() / (10 ** 18);
-    return fund.balance.div(totalTokenSupply);
+    uint256 currentTokenSupply = NOPToken(token).currentSupply() / (10 ** 18);
+    return fund.balance.div(currentTokenSupply);
   }
 
   function tokenBalanceOf(address _owner) public view returns (uint256 balance) {
@@ -42,7 +42,7 @@ contract NOP is CappedCrowdsale {
 
   function fundBalanceOf(address _owner) public view returns (uint256 balance) {
     uint256 tokenAmount = token.balanceOf(_owner);
-    return fund.balance.mul(tokenAmount).div(token.totalSupply());
+    return fund.balance.mul(tokenAmount).div(NOPToken(token).currentSupply());
   }
 
   function withdrawFromFund(uint256 _tokenAmount) public returns (bool) {
@@ -50,7 +50,7 @@ contract NOP is CappedCrowdsale {
     require(fund.balance > 0);
     uint256 tokenBalance = token.balanceOf(msg.sender);
     require(_tokenAmount <= tokenBalance);
-    uint256 weiAmount = fund.balance.mul(_tokenAmount).div(token.totalSupply());
+    uint256 weiAmount = fund.balance.mul(_tokenAmount).div(NOPToken(token).currentSupply());
     NOPToken(token).restitute(msg.sender, _tokenAmount);
     fund.transfer(msg.sender, weiAmount);
     Withdraw(msg.sender, _tokenAmount, weiAmount);

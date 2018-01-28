@@ -15,4 +15,8 @@ contract NOPToken is MintableToken {
     restituted += _amount;
     return true;
   }
+
+  function currentSupply() public view returns (uint256) {
+    return totalSupply_ - restituted;
+  }
 }
