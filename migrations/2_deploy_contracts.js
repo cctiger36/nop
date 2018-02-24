@@ -2,7 +2,7 @@ const NOP = artifacts.require("./NOP.sol");
 
 const now = parseInt(new Date() / 1000);
 const startTime = now + 120;
-const endTime = startTime + 86400;
+const endTime = startTime + 604800;
 const totalSupply = 20000000 * 10 ** 18;
 const capOfWei = 200 * 10 ** 18;
 const rate = totalSupply / capOfWei;
