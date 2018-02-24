@@ -15,11 +15,18 @@ contract NOP is CappedCrowdsale {
 
   NOPFund public fund;
 
-  function NOP(uint256 _startTime, uint256 _endTime, uint256 _rate, uint256 _cap, address _wallet) public
+  address walletOfManager;
+  address walletOfDeveloper;
+  bool private hasGrantedTokenToMarketMakers = false;
+
+  function NOP(uint256 _startTime, uint256 _endTime, uint256 _rate, uint256 _cap, address _wallet,
+               address _walletOfManager, address _walletOfDeveloper) public
     CappedCrowdsale(_cap)
     Crowdsale(_startTime, _endTime, _rate, _wallet)
   {
     fund = new NOPFund();
+    walletOfManager = _walletOfManager;
+    walletOfDeveloper = _walletOfDeveloper;
   }
 
   function createTokenContract() internal returns (MintableToken) {
@@ -32,13 +39,13 @@ contract NOP is CappedCrowdsale {
   }
 
   function tokenPriceOfFund() public view returns (uint256 price) {
-    uint256 currentTokenSupply = NOPToken(token).currentSupply() / (10 ** 18);
-    return fund.balance.div(currentTokenSupply);
+    uint256 totalTokenSupply = token.totalSupply() / (10 ** 18);
+    return fund.balance.div(totalTokenSupply);
   }
 
   function fundBalanceOf(address _owner) public view returns (uint256 balance) {
     uint256 tokenAmount = token.balanceOf(_owner);
-    return fund.balance.mul(tokenAmount).div(NOPToken(token).currentSupply());
+    return fund.balance.mul(tokenAmount).div(token.totalSupply());
   }
 
   function withdrawFromFund(uint256 _tokenAmount) public returns (bool) {
@@ -46,10 +53,21 @@ contract NOP is CappedCrowdsale {
     require(fund.balance > 0);
     uint256 tokenBalance = token.balanceOf(msg.sender);
     require(_tokenAmount <= tokenBalance);
-    uint256 weiAmount = fund.balance.mul(_tokenAmount).div(NOPToken(token).currentSupply());
+    uint256 weiAmount = fund.balance.mul(_tokenAmount).div(token.totalSupply());
     NOPToken(token).restitute(msg.sender, _tokenAmount);
     fund.transfer(msg.sender, weiAmount);
     Withdraw(msg.sender, _tokenAmount, weiAmount);
+    return true;
+  }
+
+  function grantTokenToMarketMakers() public returns (bool) {
+    require(!hasGrantedTokenToMarketMakers);
+    require(hasEnded());
+    uint256 amountForManager = token.totalSupply() / 85 * 14;
+    uint256 amountForDeveloper = token.totalSupply() / 85 * 1;
+    NOPToken(token).grantToken(walletOfManager, amountForManager);
+    NOPToken(token).grantToken(walletOfDeveloper, amountForDeveloper);
+    hasGrantedTokenToMarketMakers = true;
     return true;
   }
 }
